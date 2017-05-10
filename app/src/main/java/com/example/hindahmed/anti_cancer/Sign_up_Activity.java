@@ -26,12 +26,15 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,11 +48,13 @@ public class Sign_up_Activity extends AppCompatActivity {
     private EditText mRePassword;
     private EditText mName;
     private EditText mPassword;
-    private RadioButton male_Radio_b ;
-    private RadioButton female_Radio_b ;
+    private RadioGroup radioSexGroup;
+    private RadioButton radioSexButton;
     private View mProgressView;
     private View mLoginFormView;
-    String email, password, Repassword, Name;
+    String email, password, Repassword, Name, Sex;
+    private DatabaseReference mDatabase;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,15 +66,14 @@ public class Sign_up_Activity extends AppCompatActivity {
         mPassword = (EditText) findViewById(R.id.m_password);
         mRePassword = (EditText) findViewById(R.id.m_Repassword);
         mProgressView = findViewById(R.id.login_progress);
-        male_Radio_b = (RadioButton) findViewById(R.id.male);
-        female_Radio_b = (RadioButton) findViewById(R.id.female);
+        radioSexGroup = (RadioGroup) findViewById(R.id.radioGender);
+        Sex ="null";
+        // Write a message to the database
 
-        if(male_Radio_b.isChecked()){
-            female_Radio_b.setChecked(false);
-        }
-        if (female_Radio_b.isChecked()){
-            male_Radio_b.setChecked(false);
-        }
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+    }
+
 
 //        mPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 //            @Override
@@ -82,8 +86,23 @@ public class Sign_up_Activity extends AppCompatActivity {
 //            }
 //        });
 
+
+    private void writeNewUser(String userId, String name, String email ,String sex) {
+        User user = new User(name, email, sex);
+
+        mDatabase.child("Users").child(userId).setValue(user);
     }
+
     public void Sign_up_button(View v) {
+
+        // get selected radio button from radioGroup
+        int selectedId = radioSexGroup.getCheckedRadioButtonId();
+
+        // find the radiobutton by returned id
+        radioSexButton = (RadioButton) findViewById(selectedId);
+        Sex = radioSexButton.getText().toString();
+
+
         // Reset errors.
         mName.setError(null);
         mEmail.setError(null);
@@ -129,28 +148,14 @@ public class Sign_up_Activity extends AppCompatActivity {
             focusView = mName;
             cancel = true;
         }
-        if(female_Radio_b.isChecked()||male_Radio_b.isChecked()){
-            mcancel = true;
-        }
+
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
             focusView.requestFocus();
         } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
-            if(mcancel) {
-//                if (password.equals(Repassword)) {
-//                    showProgress(true);
-                    Sign_up();
-//                } else {
-//                    mRePassword.setText("");
-//                    Toast.makeText(Sign_up_Activity.this, "Password Not Match", Toast.LENGTH_LONG).show();
-//                }
-            }else {
-                Toast.makeText(Sign_up_Activity.this, "Please choose Female or Male ", Toast.LENGTH_LONG).show();
 
-            }
+                Sign_up();
 
         }
 
@@ -190,8 +195,8 @@ public class Sign_up_Activity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             Log.d("Login", "createUserWithEmail:onComplete:" + task.isSuccessful());
-
-                            Intent i = new Intent(Sign_up_Activity.this,Public_Activity.class);
+                            writeNewUser(task.getResult().getUser().getUid(),Name,email,Sex);
+                            Toast.makeText(Sign_up_Activity.this,task.getResult().getUser().getUid()+"",Toast.LENGTH_SHORT).show();                            Intent i = new Intent(Sign_up_Activity.this,Public_Activity.class);
                             startActivity(i);
 
                             // If sign in fails, display a message to the user. If sign in succeeds
