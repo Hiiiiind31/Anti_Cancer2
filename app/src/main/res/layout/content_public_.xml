@@ -11,6 +11,12 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.example.hindahmed.anti_cancer.Public_Activity"
-    tools:showIn="@layout/app_bar_public_">
+    tools:showIn="@layout/app_bar_public_"
+    android:background="@color/purple">
+<ListView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/List_of_all_posts">
 
+</ListView>
 </RelativeLayout>

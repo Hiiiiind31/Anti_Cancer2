@@ -10,14 +10,17 @@
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:theme="@style/AppTheme.AppBarOverlay"
+        android:background="?attr/colorAccent">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            android:background="?attr/colorAccent"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:titleTextColor="@color/purple"
+            app:title="Public" />
 
     </android.support.design.widget.AppBarLayout>
 
@@ -29,6 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        app:srcCompat="@drawable/add_icon"
+        app:backgroundTint="@color/yellow" />
 
 </android.support.design.widget.CoordinatorLayout>

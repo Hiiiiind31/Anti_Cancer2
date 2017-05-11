@@ -36,10 +36,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static android.Manifest.permission.READ_CONTACTS;
 import static com.example.hindahmed.anti_cancer.LoginActivity.mAuth;
 
 public class Sign_up_Activity extends AppCompatActivity {
@@ -116,7 +112,6 @@ public class Sign_up_Activity extends AppCompatActivity {
         Repassword = mRePassword.getText().toString();
         Name =mName.getText().toString();
         boolean cancel = false;
-        boolean mcancel = false;
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
@@ -168,26 +163,6 @@ public class Sign_up_Activity extends AppCompatActivity {
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-
-
-
-    private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
-        return email.contains("@");
-    }
-
-    private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 4;
-    }
-
-
-    /**
-     * Shows the progress UI and hides the login form.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-
-
     private void Sign_up() {
         if (isInternetOn()) {
             mAuth.createUserWithEmailAndPassword(email,password)
@@ -215,6 +190,26 @@ public class Sign_up_Activity extends AppCompatActivity {
             Toast.makeText(Sign_up_Activity.this, "Please check internet connection", Toast.LENGTH_LONG).show();
         }
     }
+
+
+
+    private boolean isEmailValid(String email) {
+        //TODO: Replace this with your own logic
+        return email.contains("@");
+    }
+
+    private boolean isPasswordValid(String password) {
+        //TODO: Replace this with your own logic
+        return password.length() > 4;
+    }
+
+
+    /**
+     * Shows the progress UI and hides the login form.
+     */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+
+
 
     public final boolean isInternetOn() {
 

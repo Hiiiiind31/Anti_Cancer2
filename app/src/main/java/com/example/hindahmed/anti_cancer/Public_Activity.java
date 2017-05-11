@@ -1,8 +1,14 @@
 package com.example.hindahmed.anti_cancer;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,9 +18,35 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.security.Key;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static android.R.attr.key;
+import static com.example.hindahmed.anti_cancer.LoginActivity.mAuth;
 
 public class Public_Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    String body_of_post ;
+    String Uid ;
+    String Author ;
+    String Email ;
+    private DatabaseReference mFirebaseDatabase_Users;
+    private DatabaseReference mFirebaseDatabase_Posts;
+    private FirebaseDatabase mFirebaseInstance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,12 +55,59 @@ public class Public_Activity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        mFirebaseInstance = FirebaseDatabase.getInstance();
+
+        // get reference to 'users' node
+        mFirebaseDatabase_Users = mFirebaseInstance.getReference("Users");
+        // get reference to 'posts' node
+        mFirebaseDatabase_Posts = mFirebaseInstance.getReference("Posts");
+       //get userid and email
+        Uid = mAuth.getCurrentUser().getUid();
+        Email = mAuth.getCurrentUser().getEmail();
+
+        mFirebaseDatabase_Users.child(Uid).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User user_details = dataSnapshot.getValue(User.class);
+                Author = user_details.getUsername();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(Public_Activity.this,databaseError.getMessage(),Toast.LENGTH_LONG).show();
+
+            }
+        });
+        mFirebaseDatabase_Posts.child("posts").addValueEventListener(new ValueEventListener() {
+            long childrenCount;
+            Object value ;
+            List post_s = new ArrayList();
+;            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot noteDataSnapshot : dataSnapshot.getChildren()) {
+                    Post postss = noteDataSnapshot.getValue(Post.class);
+                    childrenCount = noteDataSnapshot.getChildrenCount();
+                    value = noteDataSnapshot.getValue();
+
+                }
+               int size = post_s.size();
+               Toast.makeText(Public_Activity.this,childrenCount+"//"+value+"",Toast.LENGTH_LONG).show();
+               Toast.makeText(Public_Activity.this,size+"",Toast.LENGTH_LONG).show();
+           }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Add your story :)", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                Write_new_post();
             }
         });
 
@@ -40,8 +119,69 @@ public class Public_Activity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
     }
 
+
+    private void Write_new_post() {
+
+        // get prompts.xml view
+        LayoutInflater add_design_Xml = LayoutInflater.from(this);
+        View promptsView = add_design_Xml.inflate(R.layout.add_post_design, null);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                this);
+
+        // set prompts.xml to alertdialog builder
+        alertDialogBuilder.setView(promptsView);
+
+        final EditText userInput = (EditText) promptsView
+                .findViewById(R.id.editTextDialogUserInput);
+
+        // set dialog message
+        alertDialogBuilder
+                .setCancelable(false)
+                .setTitle("Share your story")
+                .setIcon(R.drawable.lol)
+                .setPositiveButton("Post",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                // get user input and set it to result
+                                // edit text
+                                body_of_post = userInput.getText().toString();
+                                writeNewPost(Uid,Author,"new post",body_of_post);
+                            }
+                        })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
+
+    }
+
+
+    private void writeNewPost(String userId, String username, String title, String body) {
+        // Create new post at /user-posts/$userid/$postid and at
+        // /posts/$postid simultaneously
+        String key =mFirebaseDatabase_Posts.push().getKey();
+        Post post = new Post(userId, username, title, body);
+        Map<String, Object> postValues = post.toMap();
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put("/posts/" + key, postValues);
+        childUpdates.put("/user-posts/" + userId + "/" + key, postValues);
+
+        mFirebaseDatabase_Posts.updateChildren(childUpdates);
+
+  }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
