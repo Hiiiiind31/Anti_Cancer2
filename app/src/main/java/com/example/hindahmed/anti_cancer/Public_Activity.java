@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -36,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 import static android.R.attr.key;
+import static android.R.attr.theme;
 import static com.example.hindahmed.anti_cancer.LoginActivity.mAuth;
 
 public class Public_Activity extends AppCompatActivity
@@ -44,6 +46,9 @@ public class Public_Activity extends AppCompatActivity
     String Uid ;
     String Author ;
     String Email ;
+    ListView listView ;
+    List post_s = new ArrayList();
+    TextView name_text ;
     private DatabaseReference mFirebaseDatabase_Users;
     private DatabaseReference mFirebaseDatabase_Posts;
     private FirebaseDatabase mFirebaseInstance;
@@ -55,8 +60,13 @@ public class Public_Activity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mFirebaseInstance = FirebaseDatabase.getInstance();
 
+        listView = (ListView) findViewById(R.id.List_of_all_posts);
+        name_text = (TextView) findViewById(R.id.name_id);
+
+        update_posts();
+
+        mFirebaseInstance = FirebaseDatabase.getInstance();
         // get reference to 'users' node
         mFirebaseDatabase_Users = mFirebaseInstance.getReference("Users");
         // get reference to 'posts' node
@@ -81,25 +91,26 @@ public class Public_Activity extends AppCompatActivity
         mFirebaseDatabase_Posts.child("posts").addValueEventListener(new ValueEventListener() {
             long childrenCount;
             Object value ;
-            List post_s = new ArrayList();
-;            @Override
+            @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+
                 for (DataSnapshot noteDataSnapshot : dataSnapshot.getChildren()) {
                     Post postss = noteDataSnapshot.getValue(Post.class);
-                    childrenCount = noteDataSnapshot.getChildrenCount();
-                    value = noteDataSnapshot.getValue();
-
+//                    childrenCount = noteDataSnapshot.getChildrenCount();
+//                    value = noteDataSnapshot.getValue();
+                    post_s.add(postss);
                 }
                int size = post_s.size();
+                update_posts();
                Toast.makeText(Public_Activity.this,childrenCount+"//"+value+"",Toast.LENGTH_LONG).show();
                Toast.makeText(Public_Activity.this,size+"",Toast.LENGTH_LONG).show();
-           }
-
+            }
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
             }
         });
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -120,6 +131,11 @@ public class Public_Activity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+    }
+
+    private void update_posts() {
+
+        listView.setAdapter(new m_Adapter(this,post_s));
     }
 
 

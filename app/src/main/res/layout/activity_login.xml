@@ -56,11 +56,12 @@
                     android:hint="@string/prompt_email"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
-                    android:singleLine="true"
+                    android:singleLine="false"
                     android:textColor="@color/colorWhite"
                     android:textColorHighlight="@color/colorWhite"
                     android:textColorHint="@color/colorWhite"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    android:imeOptions="normal" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -77,11 +78,13 @@
                     android:hint="@string/prompt_password"
                     android:imeActionId="@+id/login"
                     android:imeActionLabel="@string/action_sign_in_short"
-                    android:imeOptions="actionUnspecified"
+                    android:imeOptions="normal"
                     android:inputType="textPassword"
                     android:maxLines="1"
                     android:singleLine="true"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    android:textColorLink="@color/colorWhite"
+                    android:textColor="@color/colorWhite" />
 
             </android.support.design.widget.TextInputLayout>
 
