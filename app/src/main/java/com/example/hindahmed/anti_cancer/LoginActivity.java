@@ -76,6 +76,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mLoginFormView;
     private String TAG = "login";
     String email, password;
+    private  PrefManager prefManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +114,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
 
+        prefManager = new PrefManager(this);
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -132,6 +134,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
+                            prefManager.setPref_Name(task.getResult().getUser().getDisplayName(),task.getResult().getUser().getUid(),task.getResult().getUser().getEmail());
                             Intent i = new Intent(LoginActivity.this, Public_Activity.class);
                             startActivity(i);
                             // If sign in fails, display a message to the user. If sign in succeeds

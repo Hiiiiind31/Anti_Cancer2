@@ -50,7 +50,7 @@ public class Sign_up_Activity extends AppCompatActivity {
     private View mLoginFormView;
     String email, password, Repassword, Name, Sex;
     private DatabaseReference mDatabase;
-
+    PrefManager prefManager ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +65,7 @@ public class Sign_up_Activity extends AppCompatActivity {
         radioSexGroup = (RadioGroup) findViewById(R.id.radioGender);
         Sex ="null";
         // Write a message to the database
-
+        prefManager = new PrefManager(this);
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
     }
@@ -170,6 +170,7 @@ public class Sign_up_Activity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             Log.d("Login", "createUserWithEmail:onComplete:" + task.isSuccessful());
+                            prefManager.setPref_Name(Name,task.getResult().getUser().getUid(),email);
                             writeNewUser(task.getResult().getUser().getUid(),Name,email,Sex);
                             Toast.makeText(Sign_up_Activity.this,task.getResult().getUser().getUid()+"",Toast.LENGTH_SHORT).show();                            Intent i = new Intent(Sign_up_Activity.this,Public_Activity.class);
                             startActivity(i);

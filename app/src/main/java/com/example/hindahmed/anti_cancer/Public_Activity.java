@@ -5,9 +5,6 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -18,7 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -30,15 +26,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static android.R.attr.key;
-import static android.R.attr.theme;
-import static com.example.hindahmed.anti_cancer.LoginActivity.mAuth;
 
 public class Public_Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -52,6 +44,7 @@ public class Public_Activity extends AppCompatActivity
     private DatabaseReference mFirebaseDatabase_Users;
     private DatabaseReference mFirebaseDatabase_Posts;
     private FirebaseDatabase mFirebaseInstance;
+    private PrefManager prefManager ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +57,7 @@ public class Public_Activity extends AppCompatActivity
         listView = (ListView) findViewById(R.id.List_of_all_posts);
         name_text = (TextView) findViewById(R.id.name_id);
 
+        prefManager = new PrefManager(this);
         update_posts();
 
         mFirebaseInstance = FirebaseDatabase.getInstance();
@@ -72,8 +66,8 @@ public class Public_Activity extends AppCompatActivity
         // get reference to 'posts' node
         mFirebaseDatabase_Posts = mFirebaseInstance.getReference("Posts");
        //get userid and email
-        Uid = mAuth.getCurrentUser().getUid();
-        Email = mAuth.getCurrentUser().getEmail();
+        Uid = prefManager.getuid();
+        Email = prefManager.getemail();
 
         mFirebaseDatabase_Users.child(Uid).addValueEventListener(new ValueEventListener() {
             @Override

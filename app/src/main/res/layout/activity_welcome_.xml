@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_welcome_"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    tools:context="com.example.hindahmed.anti_cancer.Welcome_Activity">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/welcome_pic"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:weightSum="1">
+        <Button
+            android:id="@+id/sign_up_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0.51"
+            android:text="@string/action_sign_up"
+            android:background="@color/purple"
+            android:textColor="@color/colorAccent"
+            android:fontFamily="sans-serif"
+            android:onClick="Sign_up" />
+
+        <Button
+            android:id="@+id/sign_in_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@color/purple"
+            android:text="@string/action_sign_in"
+            android:textColor="@color/colorAccent"
+            android:fontFamily="sans-serif"
+            android:onClick="Sign_in"
+
+            android:layout_weight="0.54" />
+
+
+    </LinearLayout>
+</RelativeLayout>

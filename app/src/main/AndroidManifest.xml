@@ -10,12 +10,12 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/heart_with_pulse"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".LoginActivity"
+            android:name=".Welcome_Activity"
             android:label="@string/title_activity_login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,13 +30,13 @@
         <activity
             android:name=".Public_Activity"
             android:label="@string/title_activity_public_"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".Sign_up_Activity"
             android:label="@string/title_activity_signup">
 
         </activity>
+        <activity android:name=".LoginActivity"></activity>
     </application>
 
 </manifest>
