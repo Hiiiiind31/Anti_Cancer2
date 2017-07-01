@@ -30,13 +30,12 @@
         <activity
             android:name=".Public_Activity"
             android:label="@string/title_activity_public_"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Sign_up_Activity"
-            android:label="@string/title_activity_signup">
-
-        </activity>
-        <activity android:name=".LoginActivity"></activity>
+            android:label="@string/title_activity_signup"></activity>
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".slide_show_activity"></activity>
     </application>
 
 </manifest>

@@ -26,4 +26,5 @@
     <string name="title_activity_signup">Create New Account</string>
     <string name="female">Female</string>
     <string name="male">Male</string>
+    <string name="Filter">filter</string>
 </resources>

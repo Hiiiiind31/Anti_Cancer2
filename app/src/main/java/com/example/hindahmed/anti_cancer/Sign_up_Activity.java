@@ -3,6 +3,7 @@ package com.example.hindahmed.anti_cancer;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -31,14 +32,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import static com.example.hindahmed.anti_cancer.LoginActivity.mAuth;
+import static com.example.hindahmed.anti_cancer.Public_Activity.mAuth;
 
-public class Sign_up_Activity extends AppCompatActivity {
+public class Sign_up_Activity extends  Activity {
     // UI references.
     private AutoCompleteTextView mEmail;
     private EditText mRePassword;
@@ -57,6 +60,8 @@ public class Sign_up_Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_sign_up_);
+        mAuth = FirebaseAuth.getInstance();
+
         mName = (EditText) findViewById(R.id.m_name);
         mEmail = (AutoCompleteTextView) findViewById(R.id.m_email);
         mPassword = (EditText) findViewById(R.id.m_password);
@@ -152,7 +157,7 @@ public class Sign_up_Activity extends AppCompatActivity {
 
                 Sign_up();
 
-        }
+       }
 
 
     }
@@ -163,7 +168,7 @@ public class Sign_up_Activity extends AppCompatActivity {
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    private void Sign_up() {
+    public void Sign_up() {
         if (isInternetOn()) {
             mAuth.createUserWithEmailAndPassword(email,password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -185,6 +190,12 @@ public class Sign_up_Activity extends AppCompatActivity {
                             }
 
                             // ...
+                        }
+                    })
+                    .addOnFailureListener(this, new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(Sign_up_Activity.this, e.getMessage()+"", Toast.LENGTH_LONG).show();
                         }
                     });
         } else {

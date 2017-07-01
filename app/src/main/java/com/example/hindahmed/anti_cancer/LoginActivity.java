@@ -43,6 +43,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.Manifest.permission.READ_CONTACTS;
+import static com.example.hindahmed.anti_cancer.Public_Activity.mAuth;
+import static com.example.hindahmed.anti_cancer.Public_Activity.mAuthListener;
 
 /**
  * A login screen that offers login via email/password.
@@ -50,8 +52,6 @@ import static android.Manifest.permission.READ_CONTACTS;
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
 
-    static FirebaseAuth mAuth;
-    static FirebaseAuth.AuthStateListener mAuthListener;
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -83,7 +83,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {

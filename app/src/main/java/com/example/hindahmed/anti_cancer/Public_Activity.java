@@ -1,6 +1,7 @@
 package com.example.hindahmed.anti_cancer;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -20,6 +21,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,16 +37,21 @@ import java.util.Map;
 public class Public_Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     String body_of_post ;
-    String Uid ;
-    String Author ;
-    String Email ;
-    ListView listView ;
+    String Uid;
+    String Author;
+    String Email;
+    String Name ;
+    ListView listView;
     List post_s = new ArrayList();
     TextView name_text ;
+    TextView H_Text_Name ;
+    AlertDialog.Builder alertDialogBuilder ;
+    static FirebaseAuth mAuth;
+    static FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference mFirebaseDatabase_Users;
     private DatabaseReference mFirebaseDatabase_Posts;
     private FirebaseDatabase mFirebaseInstance;
-    private PrefManager prefManager ;
+    private PrefManager prefManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +62,6 @@ public class Public_Activity extends AppCompatActivity
 
 
         listView = (ListView) findViewById(R.id.List_of_all_posts);
-        name_text = (TextView) findViewById(R.id.name_id);
-
         prefManager = new PrefManager(this);
         update_posts();
 
@@ -65,9 +70,10 @@ public class Public_Activity extends AppCompatActivity
         mFirebaseDatabase_Users = mFirebaseInstance.getReference("Users");
         // get reference to 'posts' node
         mFirebaseDatabase_Posts = mFirebaseInstance.getReference("Posts");
-       //get userid and email
+        //get userid and email
         Uid = prefManager.getuid();
         Email = prefManager.getemail();
+        Name = prefManager.getname() ;
 
         mFirebaseDatabase_Users.child(Uid).addValueEventListener(new ValueEventListener() {
             @Override
@@ -78,13 +84,14 @@ public class Public_Activity extends AppCompatActivity
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Toast.makeText(Public_Activity.this,databaseError.getMessage(),Toast.LENGTH_LONG).show();
+                Toast.makeText(Public_Activity.this, databaseError.getMessage(), Toast.LENGTH_LONG).show();
 
             }
         });
         mFirebaseDatabase_Posts.child("posts").addValueEventListener(new ValueEventListener() {
             long childrenCount;
-            Object value ;
+            Object value;
+
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -94,17 +101,17 @@ public class Public_Activity extends AppCompatActivity
 //                    value = noteDataSnapshot.getValue();
                     post_s.add(postss);
                 }
-               int size = post_s.size();
+                int size = post_s.size();
                 update_posts();
-               Toast.makeText(Public_Activity.this,childrenCount+"//"+value+"",Toast.LENGTH_LONG).show();
-               Toast.makeText(Public_Activity.this,size+"",Toast.LENGTH_LONG).show();
+                Toast.makeText(Public_Activity.this, childrenCount + "//" + value + "", Toast.LENGTH_LONG).show();
+                Toast.makeText(Public_Activity.this, size + "", Toast.LENGTH_LONG).show();
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
             }
         });
-
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -124,12 +131,16 @@ public class Public_Activity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
+       // Nav Header
+        View H_View =navigationView.getHeaderView(0);
+         H_Text_Name = (TextView) H_View.findViewById(R.id.H_name);
+        //set user name in nav_header
+        H_Text_Name.setText(Name);
     }
 
     private void update_posts() {
 
-        listView.setAdapter(new m_Adapter(this,post_s));
+        listView.setAdapter(new m_Adapter(this, post_s));
     }
 
 
@@ -139,7 +150,7 @@ public class Public_Activity extends AppCompatActivity
         LayoutInflater add_design_Xml = LayoutInflater.from(this);
         View promptsView = add_design_Xml.inflate(R.layout.add_post_design, null);
 
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+        alertDialogBuilder = new AlertDialog.Builder(
                 this);
 
         // set prompts.xml to alertdialog builder
@@ -155,16 +166,16 @@ public class Public_Activity extends AppCompatActivity
                 .setIcon(R.drawable.lol)
                 .setPositiveButton("Post",
                         new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
+                            public void onClick(DialogInterface dialog, int id) {
                                 // get user input and set it to result
                                 // edit text
                                 body_of_post = userInput.getText().toString();
-                                writeNewPost(Uid,Author,"new post",body_of_post);
+                                writeNewPost(Uid, Author, "new post", body_of_post);
                             }
                         })
                 .setNegativeButton("Cancel",
                         new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
+                            public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
                             }
                         });
@@ -181,7 +192,7 @@ public class Public_Activity extends AppCompatActivity
     private void writeNewPost(String userId, String username, String title, String body) {
         // Create new post at /user-posts/$userid/$postid and at
         // /posts/$postid simultaneously
-        String key =mFirebaseDatabase_Posts.push().getKey();
+        String key = mFirebaseDatabase_Posts.push().getKey();
         Post post = new Post(userId, username, title, body);
         Map<String, Object> postValues = post.toMap();
 
@@ -191,7 +202,7 @@ public class Public_Activity extends AppCompatActivity
 
         mFirebaseDatabase_Posts.updateChildren(childUpdates);
 
-  }
+    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -199,24 +210,52 @@ public class Public_Activity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.nav_slideshow) {
 
-        } else if (id == R.id.nav_slideshow) {
+            Toast.makeText(Public_Activity.this,"slideshow",Toast.LENGTH_LONG).show();
 
-        } else if (id == R.id.nav_manage) {
+            Intent i = new Intent(Public_Activity.this, slide_show_activity.class);
+            startActivity(i);
+
+        } else if (id == R.id.nav_filter) {
+
+            // set dialog message
+
+            Toast.makeText(Public_Activity.this, "Filter", Toast.LENGTH_LONG).show();
+
+        } else if (id == R.id.nav_notification) {
+            Toast.makeText(Public_Activity.this, "notification", Toast.LENGTH_LONG).show();
+
 
         } else if (id == R.id.nav_share) {
+            Toast.makeText(Public_Activity.this, "share", Toast.LENGTH_LONG).show();
+            //whatsapp
+            String shareBody = "https://play.google.com/store/apps/details?id=com.whatsapp&hl=en";
+            Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+            sharingIntent.setType("text/plain");
+            sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "APP NAME (Open it in Google Play Store to Download the Application)");
+            sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+            startActivity(Intent.createChooser(sharingIntent, "Share via"));
+
 
         } else if (id == R.id.nav_send) {
 
+            Toast.makeText(Public_Activity.this, "send", Toast.LENGTH_LONG).show();
+            Intent email = new Intent(Intent.ACTION_SEND);
+            email.putExtra(Intent.EXTRA_EMAIL, new String[]{"hind_ahmed31@hotmail.com"});
+            email.putExtra(Intent.EXTRA_SUBJECT, "Feedback");
+            email.setType("message/rfc822");
+            startActivity(Intent.createChooser(email, "Choose an Email client :"));
+
+        }else if(id==R.id.logout) {
+            mAuth.signOut();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -227,26 +266,5 @@ public class Public_Activity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.public_, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
 }
