@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center"
-    android:layout_marginLeft="30dp"
-    android:layout_marginRight="30dp"
+    android:layout_marginLeft="50dp"
+    android:layout_marginRight="50dp"
     android:layout_marginTop="20dp"
     android:orientation="vertical">
 
@@ -22,7 +22,7 @@
         android:id="@+id/editTextDialogUserInput"
         android:layout_width="match_parent"
         android:layout_height="178dp"
-        android:inputType="text"
+        android:inputType="textMultiLine"
         android:textColor="@color/colorAccent"
         android:textSize="18sp">
 

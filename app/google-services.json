@@ -1,35 +1,27 @@
 {
   "project_info": {
-    "project_number": "491572874233",
-    "firebase_url": "https://mot3afy-7db76.firebaseio.com",
-    "project_id": "mot3afy-7db76",
-    "storage_bucket": "mot3afy-7db76.appspot.com"
+    "project_number": "201359228207",
+    "firebase_url": "https://mot3afy-ce7fb.firebaseio.com",
+    "project_id": "mot3afy-ce7fb",
+    "storage_bucket": "mot3afy-ce7fb.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:491572874233:android:ba29893f9cbee5b2",
+        "mobilesdk_app_id": "1:201359228207:android:ba29893f9cbee5b2",
         "android_client_info": {
           "package_name": "com.example.hindahmed.anti_cancer"
         }
       },
       "oauth_client": [
         {
-          "client_id": "491572874233-6ugleigi6trps0ugdf36csvsumb3g04m.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.hindahmed.anti_cancer",
-            "certificate_hash": "5330553fab9ee7a794ea2375eb46610ce7703f8c"
-          }
-        },
-        {
-          "client_id": "491572874233-ifglrp799quu2tlk5rplng2jest4bo4h.apps.googleusercontent.com",
+          "client_id": "201359228207-15puitavlv0hqqt4hd37avm9mqlr8h1f.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBCZMg6velOEgzTrTl65ur2WweLX6U89JE"
+          "current_key": "AIzaSyAM_r7ndqkPonOJ1Y0BJBHtVYyJ2ld3h-M"
         }
       ],
       "services": {
@@ -37,13 +29,8 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "491572874233-ifglrp799quu2tlk5rplng2jest4bo4h.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "status": 1,
+          "other_platform_oauth_client": []
         },
         "ads_service": {
           "status": 2

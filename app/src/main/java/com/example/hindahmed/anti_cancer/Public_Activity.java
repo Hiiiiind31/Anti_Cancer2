@@ -36,16 +36,15 @@ import java.util.Map;
 
 public class Public_Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    String body_of_post ;
+    String body_of_post;
     String Uid;
     String Author;
     String Email;
-    String Name ;
+    String Name;
     ListView listView;
     List post_s = new ArrayList();
-    TextView name_text ;
-    TextView H_Text_Name ;
-    AlertDialog.Builder alertDialogBuilder ;
+    TextView name_text;
+    TextView H_Text_Name;
     static FirebaseAuth mAuth;
     static FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference mFirebaseDatabase_Users;
@@ -73,7 +72,7 @@ public class Public_Activity extends AppCompatActivity
         //get userid and email
         Uid = prefManager.getuid();
         Email = prefManager.getemail();
-        Name = prefManager.getname() ;
+        Name = prefManager.getname();
 
         mFirebaseDatabase_Users.child(Uid).addValueEventListener(new ValueEventListener() {
             @Override
@@ -131,9 +130,9 @@ public class Public_Activity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-       // Nav Header
-        View H_View =navigationView.getHeaderView(0);
-         H_Text_Name = (TextView) H_View.findViewById(R.id.H_name);
+        // Nav Header
+        View H_View = navigationView.getHeaderView(0);
+        H_Text_Name = (TextView) H_View.findViewById(R.id.H_name);
         //set user name in nav_header
         H_Text_Name.setText(Name);
     }
@@ -150,7 +149,7 @@ public class Public_Activity extends AppCompatActivity
         LayoutInflater add_design_Xml = LayoutInflater.from(this);
         View promptsView = add_design_Xml.inflate(R.layout.add_post_design, null);
 
-        alertDialogBuilder = new AlertDialog.Builder(
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
                 this);
 
         // set prompts.xml to alertdialog builder
@@ -158,6 +157,8 @@ public class Public_Activity extends AppCompatActivity
 
         final EditText userInput = (EditText) promptsView
                 .findViewById(R.id.editTextDialogUserInput);
+        final EditText hashtag = (EditText) promptsView
+                .findViewById(R.id.Hashtag);
 
         // set dialog message
         alertDialogBuilder
@@ -166,16 +167,16 @@ public class Public_Activity extends AppCompatActivity
                 .setIcon(R.drawable.lol)
                 .setPositiveButton("Post",
                         new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
+                            public void onClick(DialogInterface dialog,int id) {
                                 // get user input and set it to result
                                 // edit text
                                 body_of_post = userInput.getText().toString();
-                                writeNewPost(Uid, Author, "new post", body_of_post);
+                                writeNewPost(Uid,Author,"new post",body_of_post+"#"+hashtag.getText().toString(),hashtag.getText().toString());
                             }
                         })
                 .setNegativeButton("Cancel",
                         new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
+                            public void onClick(DialogInterface dialog,int id) {
                                 dialog.cancel();
                             }
                         });
@@ -189,19 +190,19 @@ public class Public_Activity extends AppCompatActivity
     }
 
 
-    private void writeNewPost(String userId, String username, String title, String body) {
+    private void writeNewPost(String userId, String username, String title, String body, String hashtag) {
         // Create new post at /user-posts/$userid/$postid and at
         // /posts/$postid simultaneously
         String key = mFirebaseDatabase_Posts.push().getKey();
-        Post post = new Post(userId, username, title, body);
+        Post post = new Post(userId, username, title, body, hashtag);
         Map<String, Object> postValues = post.toMap();
 
         Map<String, Object> childUpdates = new HashMap<>();
         childUpdates.put("/posts/" + key, postValues);
         childUpdates.put("/user-posts/" + userId + "/" + key, postValues);
+        childUpdates.put("/user-Hashtag/" + hashtag + "/" + key, postValues);
 
         mFirebaseDatabase_Posts.updateChildren(childUpdates);
-
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -212,15 +213,14 @@ public class Public_Activity extends AppCompatActivity
 
         if (id == R.id.nav_slideshow) {
 
-            Toast.makeText(Public_Activity.this,"slideshow",Toast.LENGTH_LONG).show();
+            Toast.makeText(Public_Activity.this, "slideshow", Toast.LENGTH_LONG).show();
 
             Intent i = new Intent(Public_Activity.this, slide_show_activity.class);
             startActivity(i);
 
         } else if (id == R.id.nav_filter) {
 
-            // set dialog message
-
+                Filter();
             Toast.makeText(Public_Activity.this, "Filter", Toast.LENGTH_LONG).show();
 
         } else if (id == R.id.nav_notification) {
@@ -247,13 +247,86 @@ public class Public_Activity extends AppCompatActivity
             email.setType("message/rfc822");
             startActivity(Intent.createChooser(email, "Choose an Email client :"));
 
-        }else if(id==R.id.logout) {
+        } else if (id == R.id.logout) {
             mAuth.signOut();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void Filter() {
+
+        // get prompts.xml view
+        LayoutInflater add_design_Xml = LayoutInflater.from(this);
+        View promptsView = add_design_Xml.inflate(R.layout.filter, null);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+        // set prompts.xml to alertdialog builder
+        alertDialogBuilder.setView(promptsView);
+
+//
+//        final EditText hashtag = (EditText) promptsView
+//                .findViewById(R.id.Hashtag);
+
+        // set dialog message
+        alertDialogBuilder
+                .setCancelable(false)
+                .setTitle("Filter")
+                .setIcon(R.drawable.lol)
+                .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                // get user input and set it to result
+                                // edit text
+                                }
+                        })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
+
+
+        mFirebaseDatabase_Posts.child("posts").child("user-Hashtag").addValueEventListener(new ValueEventListener() {
+            long childrenCount;
+            Object value;
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+               // Toast.makeText(Public_Activity.this, dataSnapshot.+ "", Toast.LENGTH_LONG).show();
+
+                for (DataSnapshot noteDataSnapshot : dataSnapshot.getChildren()) {
+
+                    //Post postss = noteDataSnapshot.getValue(Post.class);
+                    childrenCount = noteDataSnapshot.getChildrenCount();
+                    value = noteDataSnapshot.getValue();
+                    //post_s.add(postss);
+                }
+               // int size = post_s.size();
+                update_posts();
+                Toast.makeText(Public_Activity.this, childrenCount + "//" + value + "", Toast.LENGTH_LONG).show();
+               // Toast.makeText(Public_Activity.this, size + "", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(Public_Activity.this, databaseError.getMessage()+"", Toast.LENGTH_LONG).show();
+
+            }
+        });
+
+
     }
 
     @Override
